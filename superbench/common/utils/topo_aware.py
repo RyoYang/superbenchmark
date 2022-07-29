@@ -4,8 +4,11 @@
 """Topology Aware Utilities."""
 
 import re
+import os
 import networkx as nx
+from omegaconf import OmegaConf
 from superbench.common.utils import logger
+from superbench.runner.ansible import AnsibleClient
 
 
 class quick_regexp(object):
@@ -31,7 +34,25 @@ class quick_regexp(object):
         return self.matched
 
 
-def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
+def generate_ibstat_file(host_file, ibstat_file):
+    ansible_config = OmegaConf.create(
+        {
+            'host_file': host_file
+        }
+    )
+    ansibleClient = AnsibleClient(ansible_config)
+    ansibleClient.run(
+        ansibleClient.get_playbook_config(
+            'ib_prepare.yaml',
+            extravars={
+                'workspace': str(os.environ['HOME']),
+                'ibstat': ibstat_file
+            }
+        )
+    )
+
+
+def gen_topo_aware_config(host_list, host_file, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
     """Generate topology aware config list in specified distance range.
 
     Args:
@@ -55,6 +76,11 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         logger.error('Specified minimum distane ({}) is larger than maximum distance ({}).'.format(min_dist, max_dist))
         return config
 
+    # prepare     prepare_ibstat file for each node
+    logger.info('Start to generate the host file')
+    generate_ibstat_file(host_file, ibstat_file)
+    ibstat_path = str(os.environ['HOME']) + ibstat_file
+
     # index each hostname in hostfile
     host_idx = dict()
     idx = 0
@@ -71,7 +97,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
 
     # Read ibstat output, store mapping from sysimgguid to vmhost for each HCA
     try:
-        with open(ibstat_file, mode='r', buffering=1) as f:
+        with open(ibstat_path, mode='r', buffering=1) as f:
             for line in f:
                 line = line.strip()
                 isinstance(line, str)

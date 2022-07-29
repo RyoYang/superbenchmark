@@ -1,0 +1,44 @@
+- name: Facts Gathering
+  hosts: all
+  gather_facts: true
+
+- name: Context Preparation
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Creating ib_traffic_topo_aware_ibstat.txt
+      copy:
+        content: ''
+        dest: '{{ workspace }}/{{ ibstat }}'
+      become: true
+
+- name: Full ib_traffic_topo_aware_ibstat.txt
+  hosts: all
+  serial: 1
+  gather_facts: false
+  tasks:
+    - name: Fetching info from nodes
+      become: true
+      shell: ibstat | grep "System image GUID" | sed 's/System image GUID://g' | sed -e 's/^\s*//' -e '/^$/d'
+      register: result
+
+    - name: Appending host name
+      lineinfile:
+        line: "VM_hostname {{ inventory_hostname }}"
+        path: '{{ workspace }}/{{ ibstat }}'
+      delegate_to: localhost
+
+    - name: Appending system image GUID
+      lineinfile:
+        line: "{{ result.stdout }}"
+        path: '{{ workspace }}/{{ ibstat }}'
+      delegate_to: localhost
+
+- name: Deploy file
+  hosts: all 
+  become: true 
+  tasks:
+    - name: Copying ib_traffic_topo_aware_ibstat.txt to each nodes
+      copy:
+        src: '{{ workspace }}/{{ ibstat }}'
+        dest: '{{ workspace }}/sb-workspace'
