@@ -79,7 +79,7 @@ def gen_topo_aware_config(host_list, host_file, ibstat_file, ibnetdiscover_file,
     # prepare     prepare_ibstat file for each node
     logger.info('Start to generate the host file')
     generate_ibstat_file(host_file, ibstat_file)
-    ibstat_path = str(os.environ['HOME']) + ibstat_file
+    ibstat_path = str(os.environ['HOME']) + '/' + ibstat_file
 
     # index each hostname in hostfile
     host_idx = dict()
