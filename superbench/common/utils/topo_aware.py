@@ -43,7 +43,7 @@ def generate_ibstat_file(host_file, ibstat_file):
     ansibleClient = AnsibleClient(ansible_config)
     ansibleClient.run(
         ansibleClient.get_playbook_config(
-            'ib_prepare.yaml',
+            'prepare_ibstat.yaml',
             extravars={
                 'workspace': str(os.environ['HOME']),
                 'ibstat': ibstat_file
