@@ -18,7 +18,6 @@
   gather_facts: false
   tasks:
     - name: Fetching info from nodes
-      become: true
       shell: ibstat | grep "System image GUID" | sed 's/System image GUID://g' | sed -e 's/^\s*//' -e '/^$/d'
       register: result
 
