@@ -237,7 +237,7 @@ class IBBenchmark(MicroBenchmarkWithInvoke):
             config = self.__fully_one_to_one(n)
         elif mode == 'topo-aware':
             config = gen_topo_aware_config(
-                hosts, self._args.ibstat, self._args.ibnetdiscover, self._args.min_dist, self._args.max_dist
+                hosts, self._args.hostfile, self._args.ibstat, self._args.ibnetdiscover, self._args.min_dist, self._args.max_dist
             )
         with open(config_file_path, 'w') as f:
             for line in config:
