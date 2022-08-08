@@ -4,6 +4,9 @@
 """Topology Aware Utilities."""
 
 import re
+import os
+from pathlib import Path
+from mpi4py import MPI
 import networkx as nx
 from superbench.common.utils import logger
 
@@ -31,6 +34,32 @@ class quick_regexp(object):
         return self.matched
 
 
+def gen_ibstat_file(ibstat_file):
+    """Generate ibstat file for each node with specified path.
+
+    Args:
+        ibstat_file (str): path of ibstat output.
+    """
+    comm = MPI.COMM_WORLD
+    name = MPI.Get_processor_name()
+
+    # The command to fetch ibstat info
+    cmd = "ibstat | grep 'System image GUID' | sed 's/System image GUID://g' | sed 's/[[:space:]]//g'"
+    output = os.popen(cmd)
+    ibstat_info = 'VM_hostname ' + name + '\n' + str(output.read())
+
+    # Fetch all infos from each node
+    ibstat_infos = comm.allgather(ibstat_info)
+
+    ibstate_file_path = Path(ibstat_file)
+    ibstate_file_path.touch()
+
+    with ibstate_file_path.open(mode='w') as f:
+        for ibstat_info in ibstat_infos:
+            f.write(ibstat_info)
+    MPI.Finalize()
+
+
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
     """Generate topology aware config list in specified distance range.
 
@@ -47,8 +76,17 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         topology distance (#hops).
     """
     config = []
-    if not ibstat_file or not ibnetdiscover_file:
-        logger.error('Either ibstat or ibnetdiscover not specified.')
+    if ibstat_file and not Path.exists(ibstat_file):
+        logger.error('specified ibstat file does not exist.')
+        return config
+
+    if not ibstat_file:
+        ibstat_file = '/root/ib_traffic_topo_aware_ibstat.txt'
+        if not Path.exists(ibstat_file):
+            gen_ibstat_file(ibstat_file)
+
+    if not ibnetdiscover_file:
+        logger.error('Either ibnetdiscover not specified.')
         return config
 
     if min_dist > max_dist:
