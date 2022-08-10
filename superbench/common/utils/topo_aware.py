@@ -82,10 +82,11 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
 
     if not ibstat_file:
         ibstat_file = '/root/ib_traffic_topo_aware_ibstat.txt'
-        if not Path.exists(ibstat_file):
-            gen_ibstat_file(ibstat_file)
-
+        gen_ibstat_file(ibstat_file)
+    
+    print('checkpoint 1')
     if not ibnetdiscover_file:
+        print('checkpoint 2')
         logger.error('Either ibnetdiscover not specified.')
         return config
 
