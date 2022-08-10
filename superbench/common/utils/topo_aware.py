@@ -57,8 +57,7 @@ def gen_ibstat_file(ibstat_file):
     print(ibstat_infos)
     with ibstate_file_path.open(mode='r+') as f:
         for ibstat_info in ibstat_infos:
-            print(ibstat_info)
-            if ibstat_info not in f.read():
+            if name not in f.read():
                 f.write(ibstat_info)
     MPI.Finalize()
 
