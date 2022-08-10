@@ -53,12 +53,12 @@ def gen_ibstat_file(ibstat_file):
 
     ibstate_file_path = Path(ibstat_file)
     ibstate_file_path.touch()
-
-    print(ibstat_infos)
+    st = set()
+    for ibstat_info in ibstat_infos:
+        st.add(ibstat_info)
     with ibstate_file_path.open(mode='r+') as f:
-        for ibstat_info in ibstat_infos:
-            if name not in f.read():
-                f.write(ibstat_info)
+        for s in st:
+            f.write(s)
     MPI.Finalize()
 
 
