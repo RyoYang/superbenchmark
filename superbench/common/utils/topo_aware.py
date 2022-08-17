@@ -67,7 +67,7 @@ def gen_ibstat_file(ibstat_file):
     with ibstate_file_path.open(mode='w') as f:
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
-    MPI.Finalize()
+    # MPI.Finalize()
 
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
