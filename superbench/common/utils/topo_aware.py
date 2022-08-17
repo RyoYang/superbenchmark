@@ -41,10 +41,12 @@ def gen_ibstat_file(ibstat_file):
     Args:
         ibstat_file (str): path of ibstat output.
     """
+    import mpi4py
+    mpi4py.rc(initialize=False, finalize=False)
     from mpi4py import MPI
 
-    if not MPI.Is_initialized():
-        MPI.Init()
+    # if not MPI.Is_initialized():
+    #     MPI.Init()
 
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
