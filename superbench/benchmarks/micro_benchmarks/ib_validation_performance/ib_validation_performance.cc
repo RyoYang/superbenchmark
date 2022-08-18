@@ -418,6 +418,7 @@ int main(int argc, char **argv) {
         // Initialize the MPI environment.
         int flag;
         MPI_Initialized(&flag);
+        printf("MPI_Initialized returned true before MPI_Init.\n");
         if(!flag){
             int provided;
             printf("MPI_Initialized returned false before MPI_Init.\n");
@@ -436,7 +437,7 @@ int main(int argc, char **argv) {
         // Get and parse command line arguments
         Args args;
         load_args(argc, argv, args);
-
+        printf("loading args\n")
         // Handle local size and rank
 #if defined(OPEN_MPI)
         local_size = atoi(getenv("OMPI_COMM_WORLD_LOCAL_SIZE"));
