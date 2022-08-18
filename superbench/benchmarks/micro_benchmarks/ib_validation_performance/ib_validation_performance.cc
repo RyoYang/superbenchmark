@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
         // Get and parse command line arguments
         Args args;
         load_args(argc, argv, args);
-        printf("loading args\n")
+        printf("loading args\n");
         // Handle local size and rank
 #if defined(OPEN_MPI)
         local_size = atoi(getenv("OMPI_COMM_WORLD_LOCAL_SIZE"));
