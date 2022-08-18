@@ -43,7 +43,7 @@ def gen_ibstat_file(ibstat_file):
     """
     # import mpi4py
     # mpi4py.rc(initialize=False, finalize=False)
-    # from mpi4py import MPI
+    from mpi4py import MPI
 
     # # if not MPI.Is_initialized():
     # #     MPI.Init()
