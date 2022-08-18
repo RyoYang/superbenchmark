@@ -41,32 +41,32 @@ def gen_ibstat_file(ibstat_file):
     Args:
         ibstat_file (str): path of ibstat output.
     """
-    import mpi4py
-    mpi4py.rc(initialize=False, finalize=False)
-    from mpi4py import MPI
+    # import mpi4py
+    # mpi4py.rc(initialize=False, finalize=False)
+    # from mpi4py import MPI
 
-    # if not MPI.Is_initialized():
-    #     MPI.Init()
+    # # if not MPI.Is_initialized():
+    # #     MPI.Init()
 
-    comm = MPI.COMM_WORLD
-    name = MPI.Get_processor_name()
+    # comm = MPI.COMM_WORLD
+    # name = MPI.Get_processor_name()
 
-    # The command to fetch ibstat info
-    cmd = r"ibstat | grep -Po 'System image GUID: \K\S+$'"
-    output = os.popen(cmd)
-    ibstat = 'VM_hostname ' + name + '\n' + str(output.read())
+    # # The command to fetch ibstat info
+    # cmd = r"ibstat | grep -Po 'System image GUID: \K\S+$'"
+    # output = os.popen(cmd)
+    # ibstat = 'VM_hostname ' + name + '\n' + str(output.read())
 
-    # Fetch all ibstate from each node
-    ibstats = comm.allgather(ibstat)
+    # # Fetch all ibstate from each node
+    # ibstats = comm.allgather(ibstat)
 
-    ibstate_file_path = Path(ibstat_file)
+    # ibstate_file_path = Path(ibstat_file)
 
-    # Filter the duplicate info
-    ibstat_infos = set(ibstats)
+    # # Filter the duplicate info
+    # ibstat_infos = set(ibstats)
 
-    with ibstate_file_path.open(mode='w') as f:
-        for ibstat_info in ibstat_infos:
-            f.write(ibstat_info)
+    # with ibstate_file_path.open(mode='w') as f:
+    #     for ibstat_info in ibstat_infos:
+    #         f.write(ibstat_info)
     # MPI.Finalize()
 
 
