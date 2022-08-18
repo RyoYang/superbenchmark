@@ -420,6 +420,7 @@ int main(int argc, char **argv) {
         MPI_Initialized(&flag);
         if(!flag){
             int provided;
+            printf("MPI_Initialized returned false before MPI_Init.\n");
             MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
         }
         // Get the number of ranks
