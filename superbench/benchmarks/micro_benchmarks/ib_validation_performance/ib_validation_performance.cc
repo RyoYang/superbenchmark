@@ -416,9 +416,12 @@ void output_to_file(const std::string cmd_prefix, const vector<vector<std::pair<
 int main(int argc, char **argv) {
     try {
         // Initialize the MPI environment.
-        int provided;
-        MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
-
+        int flag;
+        MPI_Initialized(&flag);
+        if(!flag){
+            int provided;
+            MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
+        }
         // Get the number of ranks
         MPI_Comm_size(MPI_COMM_WORLD, &g_world_size);
 

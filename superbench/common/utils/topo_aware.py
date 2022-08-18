@@ -44,11 +44,11 @@ def gen_ibstat_file(ibstat_file):
     # import mpi4py
     # mpi4py.rc(initialize=False, finalize=False)
     import mpi4py
-    mpi4py.rc.initialize = False  # do not initialize MPI automatically
-    mpi4py.rc.finalize = False # do not finalize MPI automatically
+    mpi4py.rc(initialize=False, finalize=False)
     from mpi4py import MPI
 
-    MPI.Init()
+    if not MPI.is_initilized():
+        MPI.Init()
 
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
