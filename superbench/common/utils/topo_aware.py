@@ -48,7 +48,7 @@ def gen_ibstat_file(ibstat_file):
     from mpi4py import MPI
 
     if not MPI.Is_initialized():
-        MPI.Init()
+        MPI.Init_thread(MPI.THREAD_MULTIPLE)
 
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
