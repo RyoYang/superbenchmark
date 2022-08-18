@@ -47,7 +47,7 @@ def gen_ibstat_file(ibstat_file):
     mpi4py.rc(initialize=False, finalize=False)
     from mpi4py import MPI
 
-    if not MPI.is_initilized():
+    if not MPI.Is_initialized():
         MPI.Init()
 
     comm = MPI.COMM_WORLD
