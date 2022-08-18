@@ -67,6 +67,7 @@ def gen_ibstat_file(ibstat_file):
     with ibstate_file_path.open(mode='w') as f:
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
+    logger.info("finish gen ibstate file")
     # MPI.Finalize()
 
 
@@ -103,6 +104,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         logger.error('Specified minimum distane ({}) is larger than maximum distance ({}).'.format(min_dist, max_dist))
         return config
 
+    logger.info("finish gen ibstate file 2")
     # Index each hostname in hostfile
     host_idx = dict()
     idx = 0
