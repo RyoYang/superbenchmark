@@ -43,34 +43,32 @@ def gen_ibstat_file(ibstat_file):
     """
     # import mpi4py
     # mpi4py.rc(initialize=False, finalize=False)
-    # import mpi4py
-    # mpi4py.rc(initialize=False, finalize=False)
     from mpi4py import MPI
 
     # if not MPI.Is_initialized():
     #     MPI.Init_thread(MPI.THREAD_MULTIPLE)
 
-    comm = MPI.COMM_WORLD
-    name = MPI.Get_processor_name()
+    # comm = MPI.COMM_WORLD
+    # name = MPI.Get_processor_name()
 
-    # The command to fetch ibstat info
-    cmd = r"ibstat | grep -Po 'System image GUID: \K\S+$'"
-    output = os.popen(cmd)
-    ibstat = 'VM_hostname ' + name + '\n' + str(output.read())
+    # # The command to fetch ibstat info
+    # cmd = r"ibstat | grep -Po 'System image GUID: \K\S+$'"
+    # output = os.popen(cmd)
+    # ibstat = 'VM_hostname ' + name + '\n' + str(output.read())
 
-    # Fetch all ibstate from each node
-    ibstats = comm.allgather(ibstat)
+    # # Fetch all ibstate from each node
+    # ibstats = comm.allgather(ibstat)
 
-    ibstate_file_path = Path(ibstat_file)
+    # ibstate_file_path = Path(ibstat_file)
 
-    # Filter the duplicate info
-    ibstat_infos = set(ibstats)
+    # # Filter the duplicate info
+    # ibstat_infos = set(ibstats)
 
-    with ibstate_file_path.open(mode='w') as f:
-        for ibstat_info in ibstat_infos:
-            f.write(ibstat_info)
-    logger.info("finish gen ibstate file")
-    # MPI.Finalize()
+    # with ibstate_file_path.open(mode='w') as f:
+    #     for ibstat_info in ibstat_infos:
+    #         f.write(ibstat_info)
+    # logger.info("finish gen ibstate file")
+    MPI.Finalize()
 
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
