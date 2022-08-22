@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 import mpi4py
-mpi4py.rc(initialize=False, finalize=False)
+mpi4py.rc(finalize=False)
 from mpi4py import MPI
 import networkx as nx
 
