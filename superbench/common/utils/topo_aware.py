@@ -9,6 +9,7 @@ from pathlib import Path
 
 import networkx as nx
 from multiprocessing import Process
+from time import sleep
 
 from superbench.common.utils import logger
 
@@ -93,6 +94,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         ibstat_file = os.path.join(os.environ.get('SB_WORKSPACE', '.'), 'ib_traffic_topo_aware_ibstat.txt')
         p = Process(target = gen_ibstat_file, args=(ibstat_file,))
         p.start()
+        sleep(5)
         p.terminate()
         p.join()
 
