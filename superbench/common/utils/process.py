@@ -4,7 +4,7 @@
 """Process Utility."""
 
 import subprocess
-
+from multiprocessing import Process, Value, Array
 
 def run_command(command):
     """Run command in string format, return the result with stdout and stderr.
