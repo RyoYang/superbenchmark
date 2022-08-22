@@ -45,7 +45,7 @@ def gen_ibstat_file(ibstat_file):
     # import mpi4py
     # mpi4py.rc(finalize=False)
     from mpi4py import MPI
-    
+
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
 
@@ -92,7 +92,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         ibstat_file = os.path.join(os.environ.get('SB_WORKSPACE', '.'), 'ib_traffic_topo_aware_ibstat.txt')
         p = Process(target = gen_ibstat_file, args=(ibstat_file,))
         p.start()
-
+        p.join()
     if not Path(ibstat_file).exists():
         logger.error('ibstat file does not exist.')
         return config
