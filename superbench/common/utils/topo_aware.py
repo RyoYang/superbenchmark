@@ -45,8 +45,6 @@ def gen_ibstat_file(ibstat_file):
         ibstat_file (str): path of ibstat output.
     """
 
-    
-    MPI.Init()
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
 
