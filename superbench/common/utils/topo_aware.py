@@ -95,9 +95,8 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
         p = Process(target = gen_ibstat_file, args=(ibstat_file,))
         p.start()
         sleep(4)
-        p.terminate()
+        p.kill()
         p.join()
-        sleep(4)
     if not Path(ibstat_file).exists():
         logger.error('ibstat file does not exist.')
         return config
