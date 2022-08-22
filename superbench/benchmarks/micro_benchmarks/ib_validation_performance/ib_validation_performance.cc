@@ -418,12 +418,12 @@ int main(int argc, char **argv) {
         // Initialize the MPI environment.
         int flag;
         MPI_Initialized(&flag);
-        printf("The result of MPI_Initialized is %d\n",flag);
-        if(flag != 1){
-            int provided;
-            printf("MPI_Initialized returned false before MPI_Init.\n");
-            MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
-        }
+        // printf("The result of MPI_Initialized is %d\n",flag);
+        // if(flag != 1){
+        //     int provided;
+        //     printf("MPI_Initialized returned false before MPI_Init.\n");
+        //     MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
+        // }
         printf("The result of MPI_Init_thread is %d\n",flag);
         // Get the number of ranks
         MPI_Comm_size(MPI_COMM_WORLD, &g_world_size);
