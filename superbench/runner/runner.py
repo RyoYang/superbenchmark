@@ -158,6 +158,7 @@ class SuperBenchRunner():
             )
         else:
             logger.warning('Unknown mode %s.', mode.name)
+        logger.info("cmd is {}".format(mode_command.strip()))
         return mode_command.strip()
 
     def deploy(self):    # pragma: no cover
