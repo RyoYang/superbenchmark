@@ -141,7 +141,7 @@ class SuperBenchRunner():
         elif mode.name == 'mpi':
             mode_command = (
                 'mpirun '    # use default OpenMPI in image
-                '-v'
+                '-v '
                 '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
                 '-allow-run-as-root '    # allow mpirun to run when executed by root user
                 '{host_list} '    # use prepared hostfile and launch {proc_num} processes on each node
