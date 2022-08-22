@@ -416,7 +416,6 @@ void output_to_file(const std::string cmd_prefix, const vector<vector<std::pair<
 int main(int argc, char **argv) {
     try {
         // Initialize the MPI environment.
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         int flag;
         MPI_Initialized(&flag);
         printf("The result of MPI_Initialized is %d\n",flag);

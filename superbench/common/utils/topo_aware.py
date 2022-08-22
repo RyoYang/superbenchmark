@@ -10,7 +10,7 @@ from pathlib import Path
 import networkx as nx
 
 from superbench.common.utils import logger
-from mpi4py import MPI
+
 
 class quick_regexp(object):
     """Quick regular expression class."""
@@ -43,7 +43,7 @@ def gen_ibstat_file(ibstat_file):
     """
     # import mpi4py
     # mpi4py.rc(initialize=False, finalize=False)
-    # from mpi4py import MPI
+    from mpi4py import MPI
 
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
@@ -64,7 +64,7 @@ def gen_ibstat_file(ibstat_file):
     with ibstate_file_path.open(mode='w') as f:
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
-    MPI.Finalize()
+    # MPI.Finalize()
 
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
