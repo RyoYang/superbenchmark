@@ -17,9 +17,10 @@ def run_command(command):
     """
     env=os.environ
     new_env = {k: v for k, v in env.iteritems() if "MPI" not in k}
-    result = subprocess.Popen(command, shell=True, env=new_env,stdout=subprocess.PIPE, stdin=subprocess.PIPE, check=False, universal_newlines=True)
+    p = subprocess.Popen(command, shell=True, env=new_env,stdout=subprocess.PIPE, stdin=subprocess.PIPE, check=False, universal_newlines=True)
+    stdout = p.communicate()
     # result = subprocess.run(
     #     command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False, universal_newlines=True
     # )
 
-    return result
+    return stdout.strip()
