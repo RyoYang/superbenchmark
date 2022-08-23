@@ -10,7 +10,6 @@ from superbench.common.utils import gen_topo_aware_config
 from superbench.benchmarks import BenchmarkRegistry, ReturnCode
 from superbench.common.devices import GPU
 from superbench.benchmarks.micro_benchmarks import MicroBenchmarkWithInvoke
-from mpi4py import MPI
 
 class IBBenchmark(MicroBenchmarkWithInvoke):
     """The IB validation performance benchmark class."""
