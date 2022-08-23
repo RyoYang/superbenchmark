@@ -8,8 +8,6 @@ import os
 from pathlib import Path
 
 import networkx as nx
-from multiprocessing import Process
-from time import sleep
 
 from superbench.common.utils import logger
 
@@ -43,10 +41,7 @@ def gen_ibstat_file(ibstat_file):
     Args:
         ibstat_file (str): path of ibstat output.
     """
-    # import mpi4py
-    # mpi4py.rc(finalize=False)
     from mpi4py import MPI
-
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
 
@@ -66,7 +61,6 @@ def gen_ibstat_file(ibstat_file):
     with ibstate_file_path.open(mode='w') as f:
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
-    MPI.Finalize()
 
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
@@ -92,11 +86,8 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
 
     if not ibstat_file:
         ibstat_file = os.path.join(os.environ.get('SB_WORKSPACE', '.'), 'ib_traffic_topo_aware_ibstat.txt')
-        p = Process(target = gen_ibstat_file, args=(ibstat_file,))
-        p.start()
-        sleep(4)
-        p.kill()
-        p.join()
+        gen_ibstat_file(ibstat_file)
+
     if not Path(ibstat_file).exists():
         logger.error('ibstat file does not exist.')
         return config
