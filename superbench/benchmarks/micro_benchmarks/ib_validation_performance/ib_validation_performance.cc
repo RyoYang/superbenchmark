@@ -263,7 +263,7 @@ void gather_hostnames(vector<string> &hostnames, string filename) {
 // TODO: does not work latency tests
 float process_raw_output(string output) {
     printf("The raw output is: \n");
-    printf("%s\n", output);
+    std::cout << output << std::endl;
     float res = -1.0;
     try {
         vector<string> lines;
