@@ -292,6 +292,7 @@ float run_cmd(string cmd_prefix, int timeout, int port, bool server, string host
         command = "timeout " + to_string(timeout) + " " + cmd_prefix + " -p " + to_string(port);
         command = server ? command : command + " " + hostname;
         output = exec(command.c_str());
+        cout << output << endl;
     } catch (const std::exception &e) {
         std::cout << "Error: failed to exec command: " << command << ",msg: " << e.what() << std::endl;
     }

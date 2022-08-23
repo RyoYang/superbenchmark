@@ -62,6 +62,11 @@ def gen_ibstat_file(ibstat_file):
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
 
+# def clean_mpi_env():
+#     env=os.environ
+
+#     new_env = {k: v for k, v in env.items() if "MPI" not in k}
+
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
     """Generate topology aware config list in specified distance range.
