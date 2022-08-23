@@ -262,6 +262,8 @@ void gather_hostnames(vector<string> &hostnames, string filename) {
 // Parse raw output of ib command
 // TODO: does not work latency tests
 float process_raw_output(string output) {
+    printf("The raw output is: \n");
+    printf("%s\n", output);
     float res = -1.0;
     try {
         vector<string> lines;
