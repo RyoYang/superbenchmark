@@ -297,8 +297,10 @@ class IBBenchmark(MicroBenchmarkWithInvoke):
         gpu_dev = ''
         if self._args.gpu_dev is not None:
             gpu = GPU()
-            if gpu.vendor == 'nvidia' and 'bw' in self._args.command:
-                gpu_dev = f'--use_cuda={self._args.gpu_dev}'
+            if gpu.vendor == 'nvidia':
+                # Enable use_cuda only in bw test
+                if 'bw' in self._args.command:
+                    gpu_dev = f'--use_cuda={self._args.gpu_dev}'
             elif gpu.vendor == 'amd':
                 gpu_dev = f'--use_rocm={self._args.gpu_dev}'
             else:
