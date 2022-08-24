@@ -263,12 +263,17 @@ void gather_hostnames(vector<string> &hostnames, string filename) {
 // TODO: does not work latency tests
 float process_raw_output(string output) {
     printf("The raw output is: \n");
-    std::cout << output << std::endl;
     float res = -1.0;
     try {
+        string pattern;
         vector<string> lines;
         boost::split(lines, output, boost::is_any_of("\n"), boost::token_compress_on);
-        regex re("\\d+\\s+\\d+\\s+\\d+\\.\\d+\\s+(\\d+\\.\\d+)\\s+\\d+\\.\\d+");
+        if (output.find("BW") != string::npos) {
+            pattern = "\\d+\\s+\\d+\\s+\\d+\\.\\d+\\s+(\\d+\\.\\d+)\\s+\\d+\\.\\d+";
+        } else {
+            pattern = "\\d+\\s+\\d+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+(\\d+\\.\\d+)\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\d+\\.\\d+";
+        }
+        regex re(pattern);
         for (string line : lines) {
             smatch m;
             if (regex_search(line, m, re))
