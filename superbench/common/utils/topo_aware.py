@@ -35,6 +35,13 @@ class quick_regexp(object):
         return self.matched
 
 
+def clean_mpi_env():
+    """resolve the mpi init crash caused by mpi4py"""
+    for k, _ in os.environ.items():
+        if "OMPI_MCA_orte_" in k or "OMPI_MCA_ess" in k:
+            del os.environ[k]
+
+
 def gen_ibstat_file(ibstat_file):
     """Generate ibstat file for each node with specified path.
 
@@ -42,9 +49,6 @@ def gen_ibstat_file(ibstat_file):
         ibstat_file (str): path of ibstat output.
     """
     from mpi4py import MPI
-
-    if not MPI.Is_initialized():
-        MPI.Init()
 
     comm = MPI.COMM_WORLD
     name = MPI.Get_processor_name()
@@ -66,6 +70,7 @@ def gen_ibstat_file(ibstat_file):
         for ibstat_info in ibstat_infos:
             f.write(ibstat_info)
     MPI.Finalize()
+    clean_mpi_env()
 
 
 def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, max_dist):    # noqa: C901
