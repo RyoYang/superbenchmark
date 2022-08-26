@@ -120,12 +120,15 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
             boost::split(run_in_parallel, single_line, boost::is_any_of(";"), boost::token_compress_on);
             printf("load_config4");
             vector<int> s_occurrence(g_world_size / local_size, 0), occurrence(g_world_size / local_size, 0);
+            printf("load_config6");
             for (const auto &pair : run_in_parallel) {
                 // split pair by ","
                 size_t quote = pair.find(',');
+                printf("load_config7");
                 if (quote == pair.npos) {
                     throw std::runtime_error("Error: Invalid config format.");
                 }
+                printf("load_config8");
                 int first = stoi(pair.substr(0, quote));
                 int second = stoi(pair.substr(quote + 1));
 
