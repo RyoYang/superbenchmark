@@ -19,8 +19,8 @@ def run_command(command):
     #     command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False, universal_newlines=True
     # )
     p = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False, universal_newlines=True
+        command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True
     )  
-    p.wait()
-
-    return p.stdout.read()
+    stdout = p.communicate()
+    p.terminate()
+    return stdout
