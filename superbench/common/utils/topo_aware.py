@@ -42,6 +42,7 @@ def clean_mpi_env():
             print("Key is {}, value is {}".format(k,v))
         if "OMPI_MCA_orte_" in k or "OMPI_MCA_ess" in k:
             del os.environ[k]
+    os.environ['OMPI_COMM_WORLD_SIZE'] = 8
 
 
 def gen_ibstat_file(ibstat_file):
