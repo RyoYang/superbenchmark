@@ -38,7 +38,7 @@ class quick_regexp(object):
 def clean_mpi_env():
     """resolve the mpi init crash caused by mpi4py"""
     for k, _ in os.environ.items():
-        if "MPI"in k:
+        if "OMPI_MCA_orte_" in k or "OMPI_MCA_ess" in k:
             del os.environ[k]
 
 
