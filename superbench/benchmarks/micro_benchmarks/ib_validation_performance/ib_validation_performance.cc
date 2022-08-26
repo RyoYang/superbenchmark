@@ -418,17 +418,17 @@ int main(int argc, char **argv) {
         // Initialize the MPI environment.
         int provided;
         MPI_Init_thread(NULL, NULL, MPI_THREAD_MULTIPLE, &provided);
-
+        printf("do some thing1");
         // Get the number of ranks
         MPI_Comm_size(MPI_COMM_WORLD, &g_world_size);
-
+        printf("do some thing2");
         // Get the rank of the process
         MPI_Comm_rank(MPI_COMM_WORLD, &g_world_rank);
-
+        printf("do some thing3");
         // Get the name of the processor
         int name_len;
         MPI_Get_processor_name(g_processor_name, &name_len);
-
+        printf("do some thing4");
         // Get and parse command line arguments
         Args args;
         load_args(argc, argv, args);
@@ -444,7 +444,7 @@ int main(int argc, char **argv) {
         local_size = atoi(getenv("LOCAL_SIZE"));
         std::cout << "Warning: unknown mpi used." << std::endl;
 #endif
-
+        printf("do some thing5");
         // Load and parse running config from file
         vector<vector<std::pair<int, int>>> config = load_config(args.input_config);
 
