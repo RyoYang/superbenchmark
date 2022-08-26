@@ -96,9 +96,10 @@ void load_args(int argc, char *argv[], Args &args) {
 vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") {
     // read contents from file
     vector<std::string> config;
+    printf("load_config1")
     ifstream in(filename);
     string line;
-
+    printf("load_config2")
     if (in) {
         while (getline(in, line)) {
             if (line.size() > 0)
@@ -107,7 +108,7 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
     } else {
         throw std::runtime_error("Error: Failed to open config file.");
     }
-
+    printf("load_config3")
     // parse the string contents to vector
     vector<vector<std::pair<int, int>>> run_in_total;
     try {
@@ -117,6 +118,7 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
             vector<std::pair<int, int>> run_pairs_in_parallel;
             // split line to pair by ";"
             boost::split(run_in_parallel, single_line, boost::is_any_of(";"), boost::token_compress_on);
+            printf("load_config4")
             vector<int> s_occurrence(g_world_size / local_size, 0), occurrence(g_world_size / local_size, 0);
             for (const auto &pair : run_in_parallel) {
                 // split pair by ","
@@ -132,6 +134,7 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
                 s_occurrence[first]++;
                 // limit the maximum threads of each node no more than 65535 and server threads no more than 25000 at
                 // the same time because by default a node can use (32768-60999) ports
+                printf("load_config5")
                 if (s_occurrence[first] * local_size >= SERVER_MAX_THREADS ||
                     occurrence[second] * local_size >= MAX_THREADS || occurrence[first] * local_size >= MAX_THREADS) {
                     if (g_world_rank == ROOT_RANK)
@@ -148,6 +151,7 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
     } catch (...) {
         std::throw_with_nested(std::runtime_error("Error: Invalid config format."));
     }
+    printf("load_config6")
     if (g_world_rank == ROOT_RANK) {
         std::cout << "config: " << std::endl;
         for (const vector<std::pair<int, int>> &line : run_in_total) {
