@@ -24,5 +24,4 @@ def run_command(command):
     stdout = p.communicate()
     p.terminate()
     print(stdout)
-    pdb.set_trace()
     return stdout
