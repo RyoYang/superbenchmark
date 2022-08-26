@@ -365,28 +365,28 @@ vector<vector<float>> run_benchmark(const Args &args, vector<vector<std::pair<in
     vector<vector<float>> results;
     for (auto &line : config) {
         // Get ports for each run for single line of config
-        print("run_benchmark1");
+        printf("run_benchmark1");
         auto ports = prepare_ports(line);
         // Insert barrier to sync before each run
-        print("run_benchmark2");
+        printf("run_benchmark2");
         MPI_Barrier(MPI_COMM_WORLD);
-        print("run_benchmark3");
+        printf("run_benchmark3");
         // run commands parallel for single line of config
         vector<float> results_single_line = run_cmd_parallel(args.cmd_prefix, args.timeout, line, ports, hostnames);
-        print("run_benchmark4");
+        printf("run_benchmark4");
         // collect results for each run
         results.push_back(results_single_line);
     }
     // output the results to stdout of ROOT_RANK by default
-    print("run_benchmark5");
+    printf("run_benchmark5");
     if (g_world_rank == ROOT_RANK) {
-        print("run_benchmark6");
+        printf("run_benchmark6");
         std::cout << "results from rank ROOT_RANK: " << std::endl;
         for (vector<float> line : results) {
             for (size_t i = 0; i < line.size(); i++) {
                 std::cout << line[i] << ((i + 1) % local_size ? " " : ",");
             }
-            print("run_benchmark7");
+            printf("run_benchmark7");
             std::cout << endl;
         }
     }
