@@ -428,7 +428,7 @@ int main(int argc, char **argv) {
         printf("do some thing1");
         // Get the number of ranks
         MPI_Comm_size(MPI_COMM_WORLD, &g_world_size);
-        g_world_size = 8
+        g_world_size = 8;
         printf("do some thing2");
         // Get the rank of the process
         MPI_Comm_rank(MPI_COMM_WORLD, &g_world_rank);
