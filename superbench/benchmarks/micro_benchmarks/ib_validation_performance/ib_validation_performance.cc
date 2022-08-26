@@ -460,9 +460,9 @@ int main(int argc, char **argv) {
             if (args.output_path.size() != 0)
                 output_to_file(args.cmd_prefix, config, results, args.output_path);
         }
-
+        printf("do some thing6");
         // Finalize the MPI environment. No more MPI calls can be made after this
-        MPI_Finalize();
+        // MPI_Finalize();
     } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
