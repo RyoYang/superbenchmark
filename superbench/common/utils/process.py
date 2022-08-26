@@ -21,6 +21,5 @@ def run_command(command):
     p = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True
     )  
-    stdout = p.communicate()
-    p.terminate()
-    return stdout
+    p.wait()
+    return p.stdout.read()
