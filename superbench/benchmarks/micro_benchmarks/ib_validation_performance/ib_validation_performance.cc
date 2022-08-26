@@ -96,10 +96,8 @@ void load_args(int argc, char *argv[], Args &args) {
 vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") {
     // read contents from file
     vector<std::string> config;
-    printf("load_config1");
     ifstream in(filename);
     string line;
-    printf("load_config2");
     if (in) {
         while (getline(in, line)) {
             if (line.size() > 0)
@@ -108,7 +106,6 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
     } else {
         throw std::runtime_error("Error: Failed to open config file.");
     }
-    printf("load_config3");
     // parse the string contents to vector
     vector<vector<std::pair<int, int>>> run_in_total;
     try {
@@ -118,17 +115,14 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
             vector<std::pair<int, int>> run_pairs_in_parallel;
             // split line to pair by ";"
             boost::split(run_in_parallel, single_line, boost::is_any_of(";"), boost::token_compress_on);
-            printf("load_config4");
             vector<int> s_occurrence(g_world_size / local_size, 0), occurrence(g_world_size / local_size, 0);
-            printf("load_config6");
             for (const auto &pair : run_in_parallel) {
                 // split pair by ","
                 size_t quote = pair.find(',');
-                printf("load_config7");
+
                 if (quote == pair.npos) {
                     throw std::runtime_error("Error: Invalid config format.");
                 }
-                printf("load_config8");
                 int first = stoi(pair.substr(0, quote));
                 int second = stoi(pair.substr(quote + 1));
 
@@ -137,7 +131,6 @@ vector<vector<std::pair<int, int>>> load_config(string filename = "config.txt") 
                 s_occurrence[first]++;
                 // limit the maximum threads of each node no more than 65535 and server threads no more than 25000 at
                 // the same time because by default a node can use (32768-60999) ports
-                printf("load_config5");
                 if (s_occurrence[first] * local_size >= SERVER_MAX_THREADS ||
                     occurrence[second] * local_size >= MAX_THREADS || occurrence[first] * local_size >= MAX_THREADS) {
                     if (g_world_rank == ROOT_RANK)
@@ -372,21 +365,28 @@ vector<vector<float>> run_benchmark(const Args &args, vector<vector<std::pair<in
     vector<vector<float>> results;
     for (auto &line : config) {
         // Get ports for each run for single line of config
+        print("run_benchmark1");
         auto ports = prepare_ports(line);
         // Insert barrier to sync before each run
+        print("run_benchmark2");
         MPI_Barrier(MPI_COMM_WORLD);
+        print("run_benchmark3");
         // run commands parallel for single line of config
         vector<float> results_single_line = run_cmd_parallel(args.cmd_prefix, args.timeout, line, ports, hostnames);
+        print("run_benchmark4");
         // collect results for each run
         results.push_back(results_single_line);
     }
     // output the results to stdout of ROOT_RANK by default
+    print("run_benchmark5");
     if (g_world_rank == ROOT_RANK) {
+        print("run_benchmark6");
         std::cout << "results from rank ROOT_RANK: " << std::endl;
         for (vector<float> line : results) {
             for (size_t i = 0; i < line.size(); i++) {
                 std::cout << line[i] << ((i + 1) % local_size ? " " : ",");
             }
+            print("run_benchmark7");
             std::cout << endl;
         }
     }
