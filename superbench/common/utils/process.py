@@ -15,8 +15,12 @@ def run_command(command):
     Return:
         result (subprocess.CompletedProcess): The return value from subprocess.run().
     """
-    result = subprocess.run(
+    # result = subprocess.run(
+    #     command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False, universal_newlines=True
+    # )
+    p = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False, universal_newlines=True
-    )
+    )  
+    p.wait()
 
-    return result
+    return p.stdout.read()
