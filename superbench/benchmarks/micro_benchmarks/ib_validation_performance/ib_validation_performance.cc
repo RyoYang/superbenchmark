@@ -428,6 +428,7 @@ int main(int argc, char **argv) {
         printf("do some thing1");
         // Get the number of ranks
         MPI_Comm_size(MPI_COMM_WORLD, &g_world_size);
+        
         printf("do some thing2");
         // Get the rank of the process
         MPI_Comm_rank(MPI_COMM_WORLD, &g_world_rank);
@@ -435,6 +436,7 @@ int main(int argc, char **argv) {
         // Get the name of the processor
         int name_len;
         MPI_Get_processor_name(g_processor_name, &name_len);
+        printf("size is %d, rank is %d, name is %c", g_world_size, g_world_rank, g_processor_name);
         printf("do some thing4");
         // Get and parse command line arguments
         Args args;
@@ -451,6 +453,8 @@ int main(int argc, char **argv) {
         local_size = atoi(getenv("LOCAL_SIZE"));
         std::cout << "Warning: unknown mpi used." << std::endl;
 #endif
+        printf("local_size is %d", local_size);
+        printf("rank is %d", OMPI_COMM_WORLD_LOCAL_RANK);
         printf("do some thing5");
         // Load and parse running config from file
         vector<vector<std::pair<int, int>>> config = load_config(args.input_config);
