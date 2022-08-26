@@ -451,16 +451,16 @@ int main(int argc, char **argv) {
         // Get hostnames of all ranks
         vector<string> hostnames;
         gather_hostnames(hostnames, args.hostfile);
-
+         printf("do some thing6");
         // Run validation benchmark
         vector<vector<float>> results = run_benchmark(args, config, hostnames);
-
+        printf("do some thing7");
         // rank ROOT_RANK output the results to file
         if (g_world_rank == ROOT_RANK) {
             if (args.output_path.size() != 0)
                 output_to_file(args.cmd_prefix, config, results, args.output_path);
         }
-        printf("do some thing6");
+        printf("do some thing8");
         // Finalize the MPI environment. No more MPI calls can be made after this
         // MPI_Finalize();
     } catch (const std::exception &e) {
