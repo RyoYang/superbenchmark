@@ -401,6 +401,7 @@ class IBBenchmark(MicroBenchmarkWithInvoke):
                         config_index += 1
         except Exception:
             valid = False
+        print(self._result)
         if valid is False or config_index != len(self.__config):
             logger.error(
                 'The result format is invalid - round: {}, benchmark: {}, raw output: {}.'.format(

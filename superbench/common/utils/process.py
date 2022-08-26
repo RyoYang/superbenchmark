@@ -23,5 +23,5 @@ def run_command(command):
     )  
     stdout = p.communicate()
     p.terminate()
-    print(stdout)
-    return stdout
+    print(stdout[0])
+    return stdout[0]
