@@ -38,11 +38,10 @@ class quick_regexp(object):
 def clean_mpi_env():
     """resolve the mpi init crash caused by mpi4py"""
     for k, v in os.environ.items():
-        if 'MPI' in k:
-            print("Key is {}, value is {}".format(k,v))
+
+
         if "OMPI_MCA_orte_" in k or "OMPI_MCA_ess" in k:
             del os.environ[k]
-    os.environ['OMPI_COMM_WORLD_SIZE'] = 8
 
 
 def gen_ibstat_file(ibstat_file):
