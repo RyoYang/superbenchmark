@@ -447,11 +447,11 @@ int main(int argc, char **argv) {
         printf("do some thing5");
         // Load and parse running config from file
         vector<vector<std::pair<int, int>>> config = load_config(args.input_config);
-
+        printf("do some thing9");
         // Get hostnames of all ranks
         vector<string> hostnames;
         gather_hostnames(hostnames, args.hostfile);
-         printf("do some thing6");
+        printf("do some thing6");
         // Run validation benchmark
         vector<vector<float>> results = run_benchmark(args, config, hostnames);
         printf("do some thing7");
