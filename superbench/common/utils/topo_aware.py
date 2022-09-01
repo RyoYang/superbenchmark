@@ -45,7 +45,7 @@ def gen_ibstat_file(host_list, ibstat_file):
         ibstat_file (str): path of ibstat output.
     """
     try:
-        cmd = r"pssh -i -t 5 -H '{}' 'cat /sys/class/infiniband/*/sys_image_guid | tr -d :' | sed 's/^.*SUCCESS]/VM_hostname/g' | uniq".format(host_list)
+        cmd = r"pssh -i -t 5 -H '{}' 'cat /sys/class/infiniband/*/sys_image_guid | tr -d :' | sed 's/^.*SUCCESS]/VM_hostname/g' | uniq".format(' '.joinh(host_list))
         output = os.popen(cmd)
         # Generate ibstat file
         ibstate_file_path = Path(ibstat_file)
