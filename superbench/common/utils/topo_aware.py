@@ -38,14 +38,14 @@ class quick_regexp(object):
         return self.matched
 
 
-def gen_ibstat_file(ibstat_file):
+def gen_ibstat_file(host_list, ibstat_file):
     """Generate ibstat file in each node with specified path.
 
     Args:
         ibstat_file (str): path of ibstat output.
     """
     try:
-        cmd = r"pssh -i -t 5 -h hostfile 'cat /sys/class/infiniband/*/sys_image_guid | tr -d :' | sed 's/^.*SUCCESS]/VM_hostname/g' | uniq"
+        cmd = r"pssh -i -t 5 -H '{}' 'cat /sys/class/infiniband/*/sys_image_guid | tr -d :' | sed 's/^.*SUCCESS]/VM_hostname/g' | uniq".format(host_list)
         output = os.popen(cmd)
         # Generate ibstat file
         ibstate_file_path = Path(ibstat_file)
@@ -78,7 +78,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
 
     if not ibstat_file:
         ibstat_file = os.path.join(os.environ.get('SB_WORKSPACE', '.'), 'ib_traffic_topo_aware_ibstat.txt')
-        gen_ibstat_file(ibstat_file)
+        gen_ibstat_file(host_list, ibstat_file)
 
     if not Path(ibstat_file).exists():
         logger.error('ibstat file does not exist.')
