@@ -7,6 +7,7 @@ import subprocess
 import re
 import os
 from pathlib import Path
+from time import sleep
 
 import networkx as nx
 
@@ -52,6 +53,7 @@ def gen_ibstat_file(host_list, ibstat_file):
         ibstate_file_path = Path(ibstat_file)
         with ibstate_file_path.open(mode='w') as f:
             f.write(output)
+        sleep(1)
     except BaseException as e:
         logger.error('Failed to generate ibstate file, message: {}.'.format(str(e)))
 
