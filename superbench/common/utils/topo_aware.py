@@ -57,7 +57,7 @@ def gen_ibstat_file(host_list, ibstat_file):
                 f.write(output)
             scp_cmd = "pscp -t 5 -H '{0}' {1} {1}".format(' '.join(host_list), ibstat_file)
             # Distribute ibstat file for others
-            os.system(scp_cmd)
+            os.popen(scp_cmd)
         else:
             sleep(5)
     except BaseException as e:
