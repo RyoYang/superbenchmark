@@ -59,7 +59,7 @@ def gen_ibstat_file(host_list, ibstat_file):
             if errorn != 0:
                 logger.error('Failed to distribute ibstate file')
         else:
-            sleep(3)
+            sleep(5)
     except BaseException as e:
         logger.error('Failed to generate ibstate file, message: {}.'.format(str(e)))
 
@@ -88,7 +88,7 @@ def gen_topo_aware_config(host_list, ibstat_file, ibnetdiscover_file, min_dist, 
     if not ibstat_file:
         ibstat_file = os.path.join(os.environ.get('SB_WORKSPACE', '.'), 'ib_traffic_topo_aware_ibstat.txt')
         gen_ibstat_file(host_list, ibstat_file)
-        # sleep(2)
+        sleep(2)
 
     if not Path(ibstat_file).exists():
         logger.error('ibstat file does not exist.')
