@@ -3,6 +3,7 @@
 
 """Topology Aware Utilities."""
 
+import subprocess
 import re
 import os
 from pathlib import Path
@@ -45,12 +46,12 @@ def gen_ibstat_file(host_list, ibstat_file):
     try:
         pssh_cmd = "pssh -i -H '{}' ".format(' '.join(host_list))
         cmd = "'cat /sys/class/infiniband/*/sys_image_guid" \
-            r"| tr -d :' | sed 's/^.*[[[:upper:]]\{7\}]/VM_hostname/g' | cut -d ' ' -f 1,2"
-        output = os.popen(pssh_cmd + cmd).read()
+            r"| tr -d :' | sed -e 's/^.*\[SUCCESS\]/VM_hostname/g;s/^.*\[FAILURE\]/VM_hostname/g' | cut -d ' ' -f 1,2"
+        output = subprocess.run(pssh_cmd + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8')
         # Generate ibstat file
         ibstate_file_path = Path(ibstat_file)
         with ibstate_file_path.open(mode='w') as f:
-            f.writelines(output)
+            f.write(output)
     except BaseException as e:
         logger.error('Failed to generate ibstate file, message: {}.'.format(str(e)))
 
