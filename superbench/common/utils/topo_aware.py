@@ -45,15 +45,14 @@ def gen_ibstat_file(host_list, ibstat_file):
         ibstat_file (str): path of ibstat output.
     """
     try:
-        pssh_cmd = "pssh -i -H '{}' -x '-o StrictHostKeyChecking=no' ".format(' '.join(host_list))
+        pssh_cmd = "pssh -i -H '{}' ".format(' '.join(host_list))
         cmd = "'cat /sys/class/infiniband/*/sys_image_guid" \
             r"| tr -d :' | sed -e 's/^.*\[SUCCESS\]/VM_hostname/g;s/^.*\[FAILURE\]/VM_hostname/g' | cut -d ' ' -f 1,2"
-        output = subprocess.run(pssh_cmd + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8')
+        output = subprocess.check_output(pssh_cmd + cmd, shell=True).decode('utf-8')
         # Generate ibstat file
         ibstate_file_path = Path(ibstat_file)
         with ibstate_file_path.open(mode='w') as f:
             f.write(output)
-        sleep(1)
     except BaseException as e:
         logger.error('Failed to generate ibstate file, message: {}.'.format(str(e)))
 
