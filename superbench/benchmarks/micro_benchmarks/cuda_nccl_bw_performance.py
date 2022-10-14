@@ -16,7 +16,7 @@ from superbench.common.utils import gen_topo_aware_config, gen_pair_wise_config
 from superbench.benchmarks import BenchmarkRegistry, Platform, ReturnCode
 from superbench.benchmarks.micro_benchmarks import MicroBenchmarkWithInvoke
 
-from workspace.superbenchmark.superbench.common.utils.gen_config import gen_k_batch_config
+from superbench.common.utils.gen_config import gen_k_batch_config
 
 async def _run_cmd(cmd):
     print('Running cmd: {}'.format(cmd))
@@ -24,7 +24,7 @@ async def _run_cmd(cmd):
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await proc.communicate()
-    print(stdout)
+    return stdout.decode('utf-8')
 
 
 async def _para_run_cmd(cmds):
@@ -32,7 +32,7 @@ async def _para_run_cmd(cmds):
     for cmd in cmds:
         task = asyncio.ensure_future(_run_cmd(cmd))
         tasks.append(task)
-    await asyncio.gather(*tasks, return_exceptions=True)
+    return await asyncio.gather(*tasks, return_exceptions=True)
 
 class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
     """The NCCL bus bandwidth performance benchmark class."""
@@ -56,6 +56,8 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
         }
         self.__patterns = ['all-nodes', 'pair-wise', 'k-batch', 'topo-aware']
         self.__host_groups = []
+        self.__config = []
+        self.__return = []
 
     def add_parser_arguments(self):
         """Add the specified arguments."""
@@ -166,7 +168,7 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
             help='The path of ibnetdiscover output',
         )
 
-    def gen_pattern(self, hosts, mode, config_file_path):
+    def gen_pattern(self, hosts, mode):
         """Generate traffic pattern into config file.
 
         Args:
@@ -186,9 +188,10 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
             config = gen_topo_aware_config(
                 hosts, self._args.ibstat, self._args.ibnetdiscover, self._args.min_dist, self._args.max_dist
             )
-        with open(config_file_path, 'w') as f:
-            for line in config:
-                f.write(line + '\n')
+        self.__config = config
+        # with open(config_file_path, 'w') as f:
+        #     for line in config:
+        #         f.write(line + '\n')
 
     def __prepare_config(self):
         """Prepare and read config file.
@@ -204,13 +207,11 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
                 hosts = f.read().splitlines()
             # Generate the config file if not define
             if self._args.config is None:
-                self.gen_traffic_pattern(hosts, self._args.pattern, self.__config_path)
-            # Use the config file defined in args
-            else:
-                self.__config_path = self._args.config
+                self.gen_pattern(hosts, self._args.pattern)
             # Read the config file and check if it's empty and valid
-            with open(self.__config_path, 'r') as f:
-                lines = f.readlines()
+            # with open(self.__config_path, 'r') as f:
+            #     lines = f.readlines()
+            lines = self.__config
             for line in lines:
                 host_group = []
                 groups = line.strip().strip(';').split(';')
@@ -252,7 +253,7 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
         Return:
             True if run benchmark successfully.
         """
-        logger.info('Nccl test under {} mode, '.format(self._args.pattern))
+        logger.info('NCCL test under {} mode, '.format(self._args.pattern))
         for host_group in self.__host_groups:
             cmds = []
             for host_list in host_group:
@@ -260,7 +261,16 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
                 cmd_suffix = "/opt/superbench/bin/all_reduce_perf -b 8 -e 128 -f 2 -g 1 -c 0 -n 20 -w 5 -p 1" 
                 cmd = cmd_prefix + ' ' + cmd_suffix
                 cmds.append(cmd)
-            asyncio.run(_para_run_cmd(cmds))
+            result = asyncio.run(_para_run_cmd(cmds))
+            self.__return.append(result)
+        idx = 0
+        for results in self.__return:
+            for result in results:
+                if not self._process_raw_result(idx, result):
+                    self._result.set_return_code(ReturnCode.MICROBENCHMARK_RESULT_PARSING_FAILURE)
+                    return False
+                idx = idx + 1
+        return True
 
 
     def _preprocess(self):
@@ -332,6 +342,11 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
         self._result.add_raw_data('raw_output_' + self._args.operation, raw_output, self._args.log_raw_data)
 
         content = raw_output.splitlines()
+        if len(content) == 0:
+            self._result.add_result(self._args.operation + '_busbw', -1)
+            self._result.add_result(self._args.operation + '_algbw', -1)
+            self._result.add_result(self._args.operation + '_time', -1)
+            return True
         size = -1
         busbw_out = -1
         time_out = -1

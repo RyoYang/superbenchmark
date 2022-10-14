@@ -12,7 +12,7 @@ from superbench.common.utils import logger
 
 if __name__ == '__main__':
     context = BenchmarkRegistry.create_benchmark_context(
-        'nccl-bw', platform=Platform.CUDA, parameters='--operations allreduce'
+        'nccl-bw', platform=Platform.CUDA, parameters='--operation allreduce --maxbytes 128M --hostfile ../hostfile --pattern pair-wise'
     )
     # For ROCM environment, please specify the benchmark name and the platform as the following.
     # context = BenchmarkRegistry.create_benchmark_context(
