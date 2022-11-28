@@ -5,6 +5,8 @@
 
 import json
 import random
+import os
+import re
 from pathlib import Path
 from pprint import pformat
 from collections import defaultdict
@@ -37,6 +39,7 @@ class SuperBenchRunner():
         self._sb_output_dir = sb_output_dir
         self._output_path = Path(sb_output_dir).expanduser().resolve()
         self._ansible_client = AnsibleClient(ansible_config)
+        self._run_stdout_regex = re.compile(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))')
 
         self.__set_logger('sb-run.log')
         logger.info('Runner uses config: %s.', pformat(OmegaConf.to_container(self._sb_config, resolve=True)))
@@ -88,6 +91,12 @@ class SuperBenchRunner():
                         }
                     for key in ['PATH', 'LD_LIBRARY_PATH', 'SB_MICRO_PATH', 'SB_WORKSPACE']:
                         self._sb_benchmarks[name].modes[idx].env.setdefault(key, None)
+                    if mode.pattern:
+                        if mode.pattern.type == 'topo-aware' and not mode.pattern.ibstat:
+                            self._generate_ibstat()
+                            self._sb_benchmarks[name].modes[idx].pattern.ibstat = str(
+                                self._output_path / 'ibstate_file.txt'
+                            )
 
     def __get_enabled_benchmarks(self):
         """Get enabled benchmarks list.
@@ -386,6 +395,30 @@ class SuperBenchRunner():
                     continue
 
         return metrics_summary
+
+    def _generate_ibstat(self):
+        """Generate the ibstat file in output dir."""
+        ibstat_list = []
+
+        # callback function to collect and parse ibstat
+        def _ibstat_parser(artifact_dir):
+            raw_outputs = open(os.path.join(artifact_dir, 'stdout'), 'r')
+            for raw_output in raw_outputs:
+                output = self._run_stdout_regex.sub('', raw_output).strip()
+                if ' | CHANGED | rc=0 >>' in output:
+                    output = 'VM_hostname ' + output.replace(' | CHANGED | rc=0 >>', '')
+                ibstat_list.append(output)
+
+        ibstat_file = str(self._output_path / 'ibstate_file.txt')
+        cmd = 'cat /sys/class/infiniband/*/sys_image_guid | tr -d :'
+        config = self._ansible_client.get_shell_config(cmd)
+        config['artifacts_handler'] = _ibstat_parser
+        rc = self._ansible_client.run(config)
+        if rc != 0:
+            logger.error('Failed to gather ibstat with config: {}'.format(config))
+        with Path(ibstat_file).open(mode='w') as f:
+            for ibstat in ibstat_list:
+                f.write(ibstat + '\n')
 
     def _run_proc(self, benchmark_name, mode, vars):
         """Run the process.
