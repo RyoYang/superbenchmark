@@ -5,12 +5,12 @@
 import argparse
 import unittest
 
-from superbench.common.utils import gen_tarffic_pattern_host_group
+from superbench.common.utils import gen_traffic_pattern_host_group
 
 
 class GenConfigTest(unittest.TestCase):
     """Test the utils for generating config."""
-    def test_gen_tarffic_pattern_host_group(self):
+    def test_gen_traffic_pattern_host_group(self):
         """Test the function of generating traffic pattern config from specified mode."""
         # test under 8 nodes
         # test all-nodes pattern
@@ -23,7 +23,7 @@ class GenConfigTest(unittest.TestCase):
         )
         pattern, _ = parser.parse_known_args()
         expected_host_group = [[['node0', 'node1', 'node2', 'node3', 'node4', 'node5', 'node6', 'node7']]]
-        self.assertEqual(gen_tarffic_pattern_host_group(hostx, pattern), expected_host_group)
+        self.assertEqual(gen_traffic_pattern_host_group(hostx, pattern), expected_host_group)
         # test pair-wise pattern
         parser = argparse.ArgumentParser()
         parser.add_argument(
@@ -41,7 +41,7 @@ class GenConfigTest(unittest.TestCase):
             [['node0', 'node5'], ['node6', 'node4'], ['node7', 'node3'], ['node1', 'node2']],
             [['node0', 'node6'], ['node7', 'node5'], ['node1', 'node4'], ['node2', 'node3']]
         ]
-        self.assertEqual(gen_tarffic_pattern_host_group(hostx, pattern), expected_host_group)
+        self.assertEqual(gen_traffic_pattern_host_group(hostx, pattern), expected_host_group)
         # test k-batch pattern
         parser = argparse.ArgumentParser()
         parser.add_argument(
@@ -56,4 +56,4 @@ class GenConfigTest(unittest.TestCase):
         )
         pattern, _ = parser.parse_known_args()
         expected_host_group = [[['node0', 'node1', 'node2'], ['node3', 'node4', 'node5']]]
-        self.assertEqual(gen_tarffic_pattern_host_group(hostx, pattern), expected_host_group)
+        self.assertEqual(gen_traffic_pattern_host_group(hostx, pattern), expected_host_group)

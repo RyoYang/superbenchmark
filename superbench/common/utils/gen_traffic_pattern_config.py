@@ -8,7 +8,6 @@ from pathlib import Path
 
 from superbench.common.utils import logger
 from superbench.common.utils import gen_topo_aware_config
-from superbench.runner.ansible import AnsibleClient
 
 
 def gen_all_nodes_config(n):
@@ -119,7 +118,7 @@ def __convert_config_to_host_group(config, host_list):
     return host_groups
 
 
-def generate_ibstat(ansible_config, ibstat_path):    # pragma: no cover
+def gen_ibstat(ansible_config, ibstat_path):    # pragma: no cover
     """Generate the ibstat file in specifed path.
 
     Args:
@@ -129,6 +128,7 @@ def generate_ibstat(ansible_config, ibstat_path):    # pragma: no cover
     Returns:
         ibstat_path (str): the generated path of ibstat file.
     """
+    from superbench.runner import AnsibleClient
     ibstat_list = []
     stdout_regex = re.compile(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))')
     ansible_client = AnsibleClient(ansible_config)
@@ -154,7 +154,7 @@ def generate_ibstat(ansible_config, ibstat_path):    # pragma: no cover
     return ibstat_path
 
 
-def gen_tarffic_pattern_host_group(host_list, pattern):
+def gen_traffic_pattern_host_group(host_list, pattern):
     """Generate host group from specified traffic pattern.
 
     Args:
