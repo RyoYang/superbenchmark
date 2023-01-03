@@ -234,6 +234,7 @@ class SuperBenchExecutor():
                 else:
                     full_name = benchmark_name
                     logger.info('Executor is going to execute %s.', full_name)
+                    logger.info('benchmark_config: %s', benchmark_config)
                     context = BenchmarkRegistry.create_benchmark_context(
                         benchmark_real_name,
                         platform=self.__get_platform(),

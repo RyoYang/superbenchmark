@@ -1,0 +1,193 @@
+version: v0.6
+superbench:
+  enable:
+  # microbenchmark - computation
+  # - nccl-bw:nvlink                        # 01:24
+  - nccl-bw:ib                            # 09:34
+  # - ib-traffic
+  # - mem-bw
+  # model benchmark - training
+  monitor:
+    enable: true
+    sample_duration: 1
+    sample_interval: 10
+  var:
+    default_timeout: &default_timeout 600
+    default_local_mode: &default_local_mode
+      modes:
+      - name: local
+        proc_num: 8
+        prefix: CUDA_VISIBLE_DEVICES={proc_rank}
+        parallel: yes
+    default_pytorch_mode: &default_pytorch_mode
+      modes:
+      - name: torch.distributed
+        proc_num: 8
+      frameworks: [pytorch]
+    model_ddp_parameter: &model_ddp_param
+      duration: 0
+      num_warmup: 64
+      num_steps: 2048
+      sample_count: 8192
+      batch_size: 32
+      precision: [float32, float16]
+      model_action: [train]
+      pin_memory: yes
+    nccl_parameter: &nccl_param
+      minbytes: 128M
+      maxbytes: 1G
+      stepfactor: 2
+      check: 1
+      warmup_iters: 2
+      iters: 5
+  benchmarks:
+    # microbenchmark - computation
+    ib-traffic:
+      enable: false
+      modes:
+        - name: mpi
+          proc_num: 8
+      parameters:
+        pattern: one-to-one
+        msg_size: 8388608
+        ib_dev: mlx5_$LOCAL_RANK
+        gpu_dev: $LOCAL_RANK
+        numa_dev: $((LOCAL_RANK/2))
+    kernel-launch:
+      <<: *default_local_mode
+      timeout: *default_timeout
+    gemm-flops:
+      <<: *default_local_mode
+      timeout: 3000
+    cudnn-function:
+      <<: *default_local_mode
+      timeout: *default_timeout
+    cublas-function:
+      <<: *default_local_mode
+      timeout: *default_timeout
+    matmul:
+      <<: *default_local_mode
+      timeout: *default_timeout
+      frameworks: [pytorch]
+    gpu-burn:
+      timeout: 1800
+      modes:
+      - name: local
+        parallel: no
+      parameters:
+        time: 900
+        doubles: true
+        tensor_core: true
+    # microbenchmark - communication
+    cpu-memory-bw-latency:
+      timeout: *default_timeout
+      modes:
+      - name: local
+        parallel: no
+      parameters:
+        tests:
+        - bandwidth_matrix
+        - latency_matrix
+        - max_bandwidth
+    mem-bw:
+      timeout: *default_timeout
+      modes:
+      - name: local
+        proc_num: 8
+        prefix: CUDA_VISIBLE_DEVICES={proc_rank} numactl -N $(({proc_rank}/2))
+        parallel: no
+    gpu-copy-bw:perf:
+      timeout: 1200
+      modes:
+      - name: local
+        parallel: no
+      parameters:
+        mem_type: [htod, dtoh, dtod]
+        copy_type: [sm, dma]
+    gpu-copy-bw:correctness:
+      timeout: *default_timeout
+      modes:
+      - name: local
+        parallel: no
+      parameters:
+        mem_type: [htod, dtoh, dtod]
+        copy_type: [sm, dma]
+        size: 4096
+        num_warm_up: 0
+        num_loops: 1
+        check_data: true
+    ib-loopback:
+      timeout: *default_timeout
+      modes:
+      - name: local
+        proc_num: 4
+        prefix: PROC_RANK={proc_rank} IB_DEVICES=0,2,4,6 NUMA_NODES=1,0,3,2
+        parallel: yes
+      - name: local
+        proc_num: 4
+        prefix: PROC_RANK={proc_rank} IB_DEVICES=1,3,5,7 NUMA_NODES=1,0,3,2
+        parallel: yes
+    nccl-bw:nvlink:
+      timeout: *default_timeout
+      modes:
+      - name: mpi
+        proc_num: 8
+        node_num: 2
+      parameters:
+        <<: *nccl_param
+    nccl-bw:ib:
+      timeout: 1200
+      modes:
+      - name: mpi
+        proc_num: 8
+        node_num: all
+        pattern: 
+          name: all-nodes
+          # ibnetdiscover: /root/workspace/ryo/ibnetdiscover-ams22.txt
+          # min_dist: 2
+          # max_dist: 6
+        env:
+          NCCL_IB_PCI_RELAXED_ORDERING: '1'
+          NCCL_NET_GDR_LEVEL: '5'
+          NCCL_P2P_DISABLE: '1'
+          NCCL_SHM_DISABLE: '1'
+          NCCL_IB_DISABLE: '0'
+          NCCL_MIN_NCHANNELS: '16'
+          NCCL_TOPO_FILE: /opt/microsoft/ndv4-topo.xml
+      parameters:
+        <<: *nccl_param
+    # microbenchmark - comput-comm. overlap
+    computation-communication-overlap:
+      <<: *default_pytorch_mode
+      timeout: *default_timeout
+    sharding-matmul:
+      <<: *default_pytorch_mode
+      timeout: *default_timeout
+    # microbenchmark - storage
+    disk-benchmark:
+      timeout: 2400
+      modes:
+      - name: local
+        parallel: no
+      parameters:
+        block_devices:
+        - /dev/nvme0n1
+        - /dev/nvme1n1
+        - /dev/nvme2n1
+        - /dev/nvme3n1
+        - /dev/nvme4n1
+        - /dev/nvme5n1
+        - /dev/nvme6n1
+        - /dev/nvme7n1
+        seq_read_runtime: 60
+        rand_read_runtime: 60
+    ib-traffic:
+      enable: false
+      modes:
+        - name: mpi
+          proc_num: 8
+      parameters:
+        msg_size: 8388608
+        ib_dev: mlx5_ib$LOCAL_RANK
+        gpu_dev: $LOCAL_RANK
+        numa_dev: $((LOCAL_RANK/2))

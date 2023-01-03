@@ -1,0 +1,75 @@
+- name: Facts Gathering
+  hosts: all
+  gather_facts: true
+
+# - name: Full ib_traffic_topo_aware_ibstat.txt
+#   hosts: all
+#   gather_facts: false
+#   tasks:
+#     - name: Install basic NV driver
+#       become: true
+#       shell: |
+#             sudo /sbin/modprobe nvidia-uvm && 
+#             D=`grep nvidia-uvm /proc/devices | awk '{print $1}'` && \
+#             sudo mknod -m 666 /dev/nvidia-uvm c $D 0
+
+# - name: Setup for all nodes
+#   hosts: all
+#   gather_facts: false
+#   tasks:
+#     - name: install a specified 
+#       become: false
+#       shell: |
+#             sudo docker exec -i sb-workspace bash -c \
+#             "rm -rf superbenchmark && \
+#             git clone https://github.com/ryoyang/superbenchmark && \
+#             cd superbenchmark && \
+#             python3 -m pip install ."
+
+- name: Setup for all nodes
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: install and deploy specified sb
+      become: false
+      shell: |
+            sudo docker exec -i sb-workspace bash -c \
+            "rm -rf superbenchmark && \
+            git clone https://github.com/ryoyang/superbenchmark && \
+            cd superbenchmark && \
+            git checkout origin/test_ncll && \
+            python3 -m pip install ."
+
+# - name: Full ib_traffic_topo_aware_ibstat.txt
+#   hosts: all
+#   gather_facts: false
+#   tasks:
+#     - name: Fetching info from nodes
+#       become: true
+#       shell: |
+#               sudo rm -rf /home/yangwang1-vmss/sb-workspace/outputs
+# - name: Full ib_traffic_topo_aware_ibstat.txt
+#   hosts: all
+#   gather_facts: false
+#   tasks:
+#     - name: Install mpi4py for each nodes
+#       become: true
+#       shell: |
+#             sudo docker exec -i sb-workspace bash -c \
+#             "service ssh restart && \
+#             apt-get install -y && \
+#             python3 -m pip install mpi4py"
+
+# - name: Deploy file
+#   hosts: all 
+#   become: true 
+#   gather_facts: false
+#   tasks:
+#     - name: Copying ibnetdiscover-ams22.txt to each nodes
+#       copy:
+#         src: '/root/workspace/ibnetdiscover-ams22.txt'
+#         dest: '/home/yangwang1-vmss/sb-workspace/'
+    # - name: Copying ib_traffic_topo_aware_ibstat.txt to each dockers
+    #   shell: |
+    #         # sudo docker cp /home/yangwang1-vmss/mpitest.py sb-workspace:/root
+
