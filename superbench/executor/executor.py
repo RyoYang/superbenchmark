@@ -89,7 +89,7 @@ class SuperBenchExecutor():
         Return:
             str: Command line arguments.
         """
-        logger.debug('parameter is: 'parameters)
+        logger.debug('parameter is: ', parameters)
         argv = []
         if not parameters:
             return ''
