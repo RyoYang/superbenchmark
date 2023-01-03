@@ -121,10 +121,6 @@ class SuperBenchRunner():
         if timeout is not None:
             exec_command = 'timeout {timeout} {command}'.format(timeout=timeout, command=exec_command)
 
-        mode.env.update({
-                'SERIAL_EXEC_COUNT': mode.serial_index,
-                'PARALLEL_EXEC_COUNT': mode.parallel_index,
-        })
         mode_command = exec_command
         if mode.name == 'local':
             mode_command = '{prefix} {command}'.format(
@@ -408,24 +404,25 @@ class SuperBenchRunner():
         timeout = self._sb_benchmarks[benchmark_name].timeout
         if isinstance(timeout, int):
             timeout = max(timeout, 60)
-
+        mode.env.update({
+            'serial_index': str(mode.serial_index),
+            'parallel_index': str(mode.parallel_index),
+        })
         env_list = '--env-file /tmp/sb.env'
         if self._docker_config.skip:
             env_list = 'set -o allexport && source /tmp/sb.env && set +o allexport'
         for k, v in mode.env.items():
+            print("k: ", k)
+            print("v: ", v)
             if isinstance(v, str):
                 envvar = f'{k}={str(v).format(proc_rank=mode.proc_rank, proc_num=mode.proc_num)}'
+                print(envvar)
                 env_list += f' -e {envvar}' if not self._docker_config.skip else f' && export {envvar}'
 
         fcmd = "docker exec {env_list} sb-workspace bash -c '{command}'"
         if self._docker_config.skip:
             fcmd = "bash -c '{env_list} && cd $SB_WORKSPACE && {command}'"
-        if mode.name == 'mpi' and mode.pattern:
-            self._sb_benchmarks[benchmark_name].parameters.update({
-                'serial_index': mode.serial_index,
-                'parallel_index': mode.parallel_index,
-            })
-        print('===== _sb_benchmarks.parameters: =====',  self._sb_benchmarks[benchmark_name].parameters)
+
         ansible_runner_config = self._ansible_client.get_shell_config(
             fcmd.format(env_list=env_list, command=self.__get_mode_command(benchmark_name, mode, timeout))
         )
