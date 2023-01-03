@@ -88,6 +88,20 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
             default=5,
             help='Number of warmup iterations. Default: 5.',
         )
+        self._parser.add_argument(
+            '--pattern',
+            type=str,
+            default=None,
+            required=False,
+            help='The traffic pattern type in mpi.pattern mode',
+        )
+        self._parser.add_argument(
+            '--num_runs',
+            type=int,
+            default=None,
+            required=False,
+            help='The number of runs in mpi.pattern mode',
+        )
 
     def _preprocess(self):
         """Preprocess/preparation operations before the benchmarking.
@@ -191,7 +205,7 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
                         busbw_out = float(line[busbw_index])
                         time_out = float(line[time_index])
                         algbw_out = float(line[algbw_index])
-                        prefix_name = '{}_{}_{}_'.format(self._args.operation, '_'.join(set(hostx)), size)
+                        prefix_name = '{}_{}_{}_{}_'.format(self._args.operation, self._args.pattern, self._args.num_runs, size)
                         self._result.add_result(prefix_name + 'busbw', busbw_out)
                         self._result.add_result(prefix_name + 'algbw', algbw_out)
                         self._result.add_result(prefix_name + 'time', time_out)

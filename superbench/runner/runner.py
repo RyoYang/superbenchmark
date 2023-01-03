@@ -452,7 +452,8 @@ class SuperBenchRunner():
                         with open(self._output_path / 'hostfile', 'r') as f:
                             host_list = f.read().splitlines()
                         pattern_hostx = gen_traffic_pattern_host_group(host_list, mode.pattern)
-                        for host_groups in pattern_hostx:
+                        for index, host_groups in enumerate(pattern_hostx):
+                            self._sb_benchmarks[benchmark_name].parameters = '--pattern {} --num_runs {}'.format(mode.pattern.type, index)
                             para_rc_list = Parallel(n_jobs=len(host_groups))(
                                 delayed(self._run_proc)
                                 (benchmark_name, mode, vars={
