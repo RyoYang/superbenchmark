@@ -157,8 +157,8 @@ class SuperBenchRunner():
                 ','.join(f'{host}:{mode.proc_num}' for host in mode.host_list),
                 mca_list=' '.join(f'-mca {k} {v}' for k, v in mode.mca.items()),
                 env_list=' '.join(
-                    f'-x {k}={str(v).format(proc_rank=mode.proc_rank, proc_num=mode.proc_num, serial_index=mode.serial_index, parallel_index=mode.parallel_index)}'
-                    # if isinstance(v, str) else f'-x {k}' 
+                    f'-x {k}={str(v).format(proc_rank=mode.proc_rank, proc_num=mode.proc_num)}'
+                    # if isinstance(v, str) else f'-x {k}'
                     for k, v in mode.env.items()
                 ),
                 command=exec_command,
@@ -426,8 +426,8 @@ class SuperBenchRunner():
             fcmd = "bash -c '{env_list} && cd $SB_WORKSPACE && {command}'"
         if mode.name == 'mpi' and mode.pattern:
             self._sb_benchmarks[benchmark_name].parameters.update({
-                'serial_index': mode.serial_index,
-                'parallel_index': mode.parallel_index,
+                'SERIAL_INDEX': mode.serial_index,
+                'PARALLEL_INDEX': mode.parallel_index,
             })
         print('===== _sb_benchmarks.parameters: =====',  self._sb_benchmarks[benchmark_name].parameters)
         ansible_runner_config = self._ansible_client.get_shell_config(
