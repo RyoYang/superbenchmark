@@ -422,8 +422,8 @@ class SuperBenchRunner():
         if mode.name == 'mpi' and mode.node_num != 1:
             ansible_runner_config = self._ansible_client.update_mpi_config(ansible_runner_config)
             self._sb_benchmarks[benchmark_name].paramaters.update({
-                    'serial_count': mode.serial_index,
-                    'parallel_count': mode.parallel_index,
+                    'serial_index': mode.serial_index,
+                    'parallel_index': mode.parallel_index,
                 })
 
         if isinstance(timeout, int):
@@ -466,8 +466,8 @@ class SuperBenchRunner():
                                 (benchmark_name, mode, vars={
                                     'proc_rank': 0,
                                     'host_list': host_group,
-                                    'serial_count': serial_index,
-                                    'parallel_count': parallel_index,
+                                    'serial_index': serial_index,
+                                    'parallel_index': parallel_index,
                                 }) for parallel_index, host_group in enumerate(host_groups)
                             )
                             ansible_rc = ansible_rc + sum(para_rc_list)
