@@ -121,10 +121,10 @@ class SuperBenchRunner():
         if timeout is not None:
             exec_command = 'timeout {timeout} {command}'.format(timeout=timeout, command=exec_command)
 
-        # mode.env.update({
-        #         'SERIAL_EXEC_COUNT': mode.serial_index,
-        #         'PARALLEL_EXEC_COUNT': mode.parallel_index,
-        # })
+        mode.env.update({
+                'serial_index': mode.serial_index,
+                'parallel_index': mode.parallel_index,
+        })
         mode_command = exec_command
         if mode.name == 'local':
             mode_command = '{prefix} {command}'.format(
