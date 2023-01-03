@@ -421,6 +421,10 @@ class SuperBenchRunner():
         )
         if mode.name == 'mpi' and mode.node_num != 1:
             ansible_runner_config = self._ansible_client.update_mpi_config(ansible_runner_config)
+            self._sb_benchmarks[benchmark_name].paramaters.update({
+                    'serial_count': mode.serial_index,
+                    'parallel_count': mode.parallel_index,
+                })
 
         if isinstance(timeout, int):
             # we do not expect timeout in ansible unless subprocess hangs
@@ -429,6 +433,7 @@ class SuperBenchRunner():
         rc = self._ansible_client.run(ansible_runner_config, sudo=(not self._docker_config.skip))
         return rc
 
+    
     def run(self):
         """Run the SuperBench benchmarks distributedly."""
         self.check_env()
@@ -452,14 +457,18 @@ class SuperBenchRunner():
                         with open(self._output_path / 'hostfile', 'r') as f:
                             host_list = f.read().splitlines()
                         pattern_hostx = gen_traffic_pattern_host_group(host_list, mode.pattern)
-                        for index, host_groups in enumerate(pattern_hostx):
-                            self._sb_benchmarks[benchmark_name].parameters = '--pattern {} --num_runs {}'.format(mode.pattern.type, index)
+                        for serial_index, host_groups in enumerate(pattern_hostx):
+                            print('_sb_benchmarks[benchmark_name]: ', self._sb_benchmarks[benchmark_name])
+                            import pdb
+                            pdb.set_trace()
                             para_rc_list = Parallel(n_jobs=len(host_groups))(
                                 delayed(self._run_proc)
                                 (benchmark_name, mode, vars={
                                     'proc_rank': 0,
                                     'host_list': host_group,
-                                }) for host_group in host_groups
+                                    'serial_count': serial_index,
+                                    'parallel_count': parallel_index,
+                                }) for parallel_index, host_group in enumerate(host_groups)
                             )
                             ansible_rc = ansible_rc + sum(para_rc_list)
                 else:
