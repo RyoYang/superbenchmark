@@ -165,8 +165,8 @@ class CudaNcclBwBenchmark(MicroBenchmarkWithInvoke):
         time_out = -1
         algbw_out = -1
         hostx = []
-        serial_index = os.environ.get('serial_index')
-        parallel_index = os.environ.get('parallel_index')
+        serial_index = os.getenv('serial_index')
+        parallel_index = os.getenv('parallel_index')
         try:
             # Filter useless output
             using_device_index = -1

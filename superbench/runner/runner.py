@@ -467,7 +467,6 @@ class SuperBenchRunner():
                         pattern_hostx = gen_traffic_pattern_host_group(host_list, mode.pattern)
                         for serial_index, host_groups in enumerate(pattern_hostx):
                             print('_sb_benchmarks[benchmark_name]: ', self._sb_benchmarks[benchmark_name])
-                            self.check_env()
                             para_rc_list = Parallel(n_jobs=len(host_groups))(
                                 delayed(self._run_proc)
                                 (benchmark_name, mode, vars={
