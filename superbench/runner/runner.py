@@ -158,10 +158,14 @@ class SuperBenchRunner():
                 mca_list=' '.join(f'-mca {k} {v}' for k, v in mode.mca.items()),
                 env_list=' '.join(
                     f'-x {k}={str(v).format(proc_rank=mode.proc_rank, proc_num=mode.proc_num, serial_index=mode.serial_index, parallel_index=mode.parallel_index)}'
-                    if isinstance(v, str) else f'-x {k}' for k, v in mode.env.items()
+                    # if isinstance(v, str) else f'-x {k}' 
+                    for k, v in mode.env.items()
                 ),
                 command=exec_command,
             )
+            print(mode_command)
+            import pdb
+            pdb.set_trace()
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
