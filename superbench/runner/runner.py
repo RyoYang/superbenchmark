@@ -421,10 +421,11 @@ class SuperBenchRunner():
         )
         if mode.name == 'mpi' and mode.node_num != 1:
             ansible_runner_config = self._ansible_client.update_mpi_config(ansible_runner_config)
-            self._sb_benchmarks[benchmark_name].paramaters.update({
+            self._sb_benchmarks[benchmark_name].parameters.update({
                     'serial_index': mode.serial_index,
                     'parallel_index': mode.parallel_index,
                 })
+            print('_sb_benchmarks[benchmark_name]: ', self._sb_benchmarks[benchmark_name])
 
         if isinstance(timeout, int):
             # we do not expect timeout in ansible unless subprocess hangs
@@ -459,8 +460,6 @@ class SuperBenchRunner():
                         pattern_hostx = gen_traffic_pattern_host_group(host_list, mode.pattern)
                         for serial_index, host_groups in enumerate(pattern_hostx):
                             print('_sb_benchmarks[benchmark_name]: ', self._sb_benchmarks[benchmark_name])
-                            import pdb
-                            pdb.set_trace()
                             para_rc_list = Parallel(n_jobs=len(host_groups))(
                                 delayed(self._run_proc)
                                 (benchmark_name, mode, vars={
