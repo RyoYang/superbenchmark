@@ -122,8 +122,8 @@ class SuperBenchRunner():
             exec_command = 'timeout {timeout} {command}'.format(timeout=timeout, command=exec_command)
 
         mode.env.update({
-                'serial_index': mode.serial_index,
-                'parallel_index': mode.parallel_index,
+                'SERIAL_INDEX': mode.serial_index,
+                'PARALLEL_INDEX': mode.parallel_index,
         })
         mode_command = exec_command
         if mode.name == 'local':
