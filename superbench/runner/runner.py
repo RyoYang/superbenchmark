@@ -121,10 +121,10 @@ class SuperBenchRunner():
         if timeout is not None:
             exec_command = 'timeout {timeout} {command}'.format(timeout=timeout, command=exec_command)
 
-        # mode.env.update({
-        #         'SERIAL_INDEX': mode.serial_index,
-        #         'PARALLEL_INDEX': mode.parallel_index,
-        # })
+        mode.env.update({
+                'SERIAL_EXEC_COUNT': mode.serial_index,
+                'PARALLEL_EXEC_COUNT': mode.parallel_index,
+        })
         mode_command = exec_command
         if mode.name == 'local':
             mode_command = '{prefix} {command}'.format(
@@ -158,12 +158,10 @@ class SuperBenchRunner():
                 mca_list=' '.join(f'-mca {k} {v}' for k, v in mode.mca.items()),
                 env_list=' '.join(
                     f'-x {k}={str(v).format(proc_rank=mode.proc_rank, proc_num=mode.proc_num)}'
-                    # if isinstance(v, str) else f'-x {k}'
-                    for k, v in mode.env.items()
+                    if isinstance(v, str) else f'-x {k}' for k, v in mode.env.items()
                 ),
                 command=exec_command,
             )
-            print(mode_command)
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
@@ -424,8 +422,8 @@ class SuperBenchRunner():
             fcmd = "bash -c '{env_list} && cd $SB_WORKSPACE && {command}'"
         if mode.name == 'mpi' and mode.pattern:
             self._sb_benchmarks[benchmark_name].parameters.update({
-                'SERIAL_INDEX': mode.serial_index,
-                'PARALLEL_INDEX': mode.parallel_index,
+                'serial_index': mode.serial_index,
+                'parallel_index': mode.parallel_index,
             })
         print('===== _sb_benchmarks.parameters: =====',  self._sb_benchmarks[benchmark_name].parameters)
         ansible_runner_config = self._ansible_client.get_shell_config(
