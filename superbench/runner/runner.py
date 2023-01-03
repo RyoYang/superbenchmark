@@ -164,8 +164,6 @@ class SuperBenchRunner():
                 command=exec_command,
             )
             print(mode_command)
-            import pdb
-            pdb.set_trace()
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
