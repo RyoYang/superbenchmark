@@ -26,7 +26,7 @@ superbench:
     nccl_topo-aware_pattern: &nccl_topo_aware_pattern
       type: topo-aware
       mpi_pattern: true
-      ibnetdiscover:
+      ibnetdiscover: /tmp
       min_dist: 2
       max_dist: 6
     nccl_allreduce_config: &nccl_allreduce_config
