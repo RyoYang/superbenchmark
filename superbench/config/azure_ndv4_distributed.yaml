@@ -1,8 +1,8 @@
 version: v0.7
 superbench:
   enable:
-  # - ib-traffic:pair-wise
-  # - nccl-bw:all-nodes
+  # - ib-traffic:pair_wise
+  # - nccl-bw:all_nodes
   monitor:
     enable: true
     sample_duration: 1
@@ -60,11 +60,11 @@ superbench:
         ib_dev: mlx5_ib$LOCAL_RANK
         gpu_dev: $LOCAL_RANK
         numa_dev: $((LOCAL_RANK/2))
-    nccl-bw:all-nodes:
+    nccl-bw:all_nodes:
       <<: *nccl_allreduce_config
-    nccl-bw:pair-wise:
+    nccl-bw:pair_wise:
       <<: *nccl_allreduce_config
-    nccl-bw:k-batch:
+    nccl-bw:k_batch:
       <<: *nccl_allreduce_config
-    nccl-bw:topo-aware:
+    nccl-bw:topo_aware:
       <<: *nccl_allreduce_config
