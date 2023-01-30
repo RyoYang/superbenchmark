@@ -1,9 +1,8 @@
 version: v0.7
 superbench:
   enable:
-  - ib-traffic:pair-wise
-  - nccl-bw:pair-wise
-  # - model-benchmarks:stress
+  # - ib-traffic:pair-wise
+  # - nccl-bw:all-nodes
   monitor:
     enable: true
     sample_duration: 1
@@ -24,10 +23,10 @@ superbench:
       type: k-batch
       mpi_pattern: true
       batch: 3
-    nccl_topo_aware_pattern: &nccl_topo_aware_pattern
+    nccl_topo-aware_pattern: &nccl_topo_aware_pattern
       type: topo-aware
       mpi_pattern: true
-      ibnetdiscover: /tmp
+      ibnetdiscover:
       min_dist: 2
       max_dist: 6
     nccl_allreduce_config: &nccl_allreduce_config
@@ -41,34 +40,12 @@ superbench:
         env:
           <<: *nccl_env
       parameters:
-        # run_count: 5
         minbytes: 1K
-        maxbytes: 16G
+        maxbytes: 8G
         stepfactor: 2
         check: 1
         warmup_iters: 20
         iters: 100
-    torch_dist_config: &torch_dist_config
-      timeout: 3600
-      modes:
-      - name: torch.distributed
-        proc_num: 8
-        node_num: all
-        env:
-          <<: *nccl_env
-      frameworks: [pytorch]
-      models: [gpt2-large]
-      parameters:
-        # run_count: 5
-        duration: 1800
-        num_warmup: 64
-        num_steps: -100
-        sample_count: 8192
-        batch_size: 8
-        seq_len: 224
-        precision: [float32]
-        model_action: [train]
-        pin_memory: yes
   benchmarks:
     ib-traffic:pair-wise:
       modes:
@@ -80,11 +57,14 @@ superbench:
       parameters:
         msg_size: 8388608
         bidirectional: yes
-        ib_dev: mlx5_ib\$LOCAL_RANK
-        gpu_dev: \$LOCAL_RANK
-        numa_dev: \$((LOCAL_RANK/2))
+        ib_dev: mlx5_ib$LOCAL_RANK
+        gpu_dev: $LOCAL_RANK
+        numa_dev: $((LOCAL_RANK/2))
+    nccl-bw:all-nodes:
+      <<: *nccl_allreduce_config
     nccl-bw:pair-wise:
       <<: *nccl_allreduce_config
-    # model benchmark - training
-    model-benchmarks:stress:
-      <<: *torch_dist_config
+    nccl-bw:k-batch:
+      <<: *nccl_allreduce_config
+    nccl-bw:topo-aware:
+      <<: *nccl_allreduce_config
