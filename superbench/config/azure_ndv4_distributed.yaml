@@ -1,8 +1,8 @@
 version: v0.7
 superbench:
   enable:
-  # - ib-traffic:pair_wise
-  # - nccl-bw:all_nodes
+  #- ib-traffic:pair_wise
+  #- nccl-bw:topo_aware
   monitor:
     enable: true
     sample_duration: 1
@@ -26,7 +26,7 @@ superbench:
     nccl_topo-aware_pattern: &nccl_topo_aware_pattern
       type: topo-aware
       mpi_pattern: true
-      ibnetdiscover: /tmp
+      ibnetdiscover:
       min_dist: 2
       max_dist: 6
     nccl_allreduce_config: &nccl_allreduce_config
@@ -47,7 +47,7 @@ superbench:
         warmup_iters: 20
         iters: 100
   benchmarks:
-    ib-traffic:pair-wise:
+    ib-traffic:pair_wise:
       modes:
       - name: mpi
         proc_num: 8
